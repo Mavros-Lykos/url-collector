@@ -14,9 +14,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnSelectAll = document.getElementById('btn-select-all');
     const btnDelete = document.getElementById('btn-delete');
     const btnCopy = document.getElementById('btn-copy');
+
+    // Modal & Buttons
     const btnExport = document.getElementById('btn-export');
-    const btnImport = document.getElementById('file-import');
+    const modalExport = document.getElementById('modal-export');
+
+    const btnImportTrigger = document.getElementById('btn-import-trigger');
+    const fileInput = document.getElementById('file-import');
+
     const btnOpen = document.getElementById('btn-open');
+    const modalOpen = document.getElementById('modal-open');
 
     // Load Data
     function loadData() {
@@ -48,8 +55,13 @@ document.addEventListener('DOMContentLoaded', () => {
             urls.forEach((item, index) => {
                 const itemEl = document.createElement('div');
                 itemEl.className = 'url-item';
+
+                // Get Favicon using Google S2 service
+                const faviconUrl = `https://www.google.com/s2/favicons?domain=${new URL(item.url).hostname}&sz=32`;
+
                 itemEl.innerHTML = `
                     <input type="checkbox" class="url-check" data-id="${item.id}" ${item.selected ? 'checked' : ''}>
+                    <img src="${faviconUrl}" class="item-icon" alt="" onerror="this.src='../icons/icon.png'">
                     <div class="item-content">
                         <div class="item-title" title="${item.title}">${item.title || 'No Title'}</div>
                         <a href="${item.url}" class="item-url" target="_blank" title="${item.url}">${item.url}</a>
@@ -76,7 +88,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Save Handlers
     function saveUrls() {
         chrome.storage.local.set({ urls }, () => {
-            // Badge update handled by background listener usually, but we can also ping it
             chrome.runtime.sendMessage({ type: 'UPDATE_BADGE', count: urls.length });
         });
     }
@@ -84,6 +95,18 @@ document.addEventListener('DOMContentLoaded', () => {
     function saveSettings() {
         chrome.storage.local.set({ settings });
     }
+
+    // Toggle Modals
+    function toggleModal(modal, show = true) {
+        if (show) modal.classList.remove('hidden');
+        else modal.classList.add('hidden');
+    }
+
+    document.querySelectorAll('.close-modal').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            toggleModal(e.target.closest('.modal'), false);
+        });
+    });
 
     // Event Listeners
     toggleCollection.addEventListener('change', (e) => {
@@ -97,11 +120,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     btnCollectTabs.addEventListener('click', async () => {
-        // Collect URLs from current window
         const tabs = await chrome.tabs.query({ currentWindow: true });
         let addedCount = 0;
-
-        // Max 100 limit check
         const remainingSpace = 100 - urls.length;
         if (remainingSpace <= 0) {
             alert("Storage limit reached (100 URLs).");
@@ -111,13 +131,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const tabsToProcess = tabs.slice(0, remainingSpace);
 
         tabsToProcess.forEach(tab => {
-            // Avoid duplicates?
+            // Include Favicon support in scraper? 
+            // We use the Google service in UI, so no need to store base64 unless offline.
+            if (!tab.url.startsWith('http')) return;
+
             if (!urls.some(u => u.url === tab.url)) {
                 urls.push({
                     id: crypto.randomUUID(),
                     url: tab.url,
                     title: tab.title,
-                    description: "", // Cannot get desc easily from background without injection
+                    description: "",
                     thumbnail: "",
                     timestamp: new Date().toISOString(),
                     selected: false
@@ -128,9 +151,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         saveUrls();
         updateUI();
-        if (tabs.length > remainingSpace) {
-            alert(`Added ${addedCount} URLs. Limit reached.`);
-        }
     });
 
     btnSelectAll.addEventListener('click', () => {
@@ -166,84 +186,54 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Export Functionality
+    // Export with Modal
     btnExport.addEventListener('click', () => {
-        const selected = urls.filter(u => u.selected);
-        const target = selected.length > 0 ? selected : urls;
-
-        if (target.length === 0) return;
-
-        // Prompt for format hack (simple alert or just options? SRS says dropdown, but for V1 we might just select logic or prompt)
-        // Let's implement a simple prompt or default to JSON for now, or use a tiny menu
-        // SRS says "Format selection dropdown". I'll use a prompt for simplicity or iterate in V2
-        // Actually, let's just make it JSON by default or ask user?
-        // Wait, V1 SRS: "Export button shall provide format selection dropdown".
-        // I haven't built the dropdown in HTML. I will add a simple prompt or allow standard behavior.
-        // Let's modify logic to just export JSON for now or use `confirm` to toggle?
-        // Better: Create 3 variables for V1 simplicity if UI is tight.
-        // Let's default to JSON, but if I can, I'll update HTML.
-        // I'll stick to JSON for this "MVP" step unless asked, OR I can use a browser prompt: "Type csv, json, or txt"
-
-        // Updating to just export JSON for robustness now, will update UI later if needed.
-        // Or better: Cycle through? No.
-        // Let's just do JSON.
-        // WAIT, I should follow SRS. I will add a small overlay or prompt.
-        // Simple workaround: An alert for V1?
-        // Let's hardcode JSON for this specific file write, and I'll add the dropdown to HTML in a later step if requested or if I noticed I missed it.
-        // Actually, the user can just download.
-
-        // Update: I will implement a basic prompt.
-        // "enter format: json, csv, txt"
-
-        // Actually, just creating a simple selector in JS is better.
-        // For now, I'll default to JSON, then add CSV/TXT logic if I have time in this function.
-
-        const format = "json"; // Placeholder
-        const filename = `urls_${new Date().toISOString().slice(0, 10)}.json`;
-        UTILS.downloadFile(JSON.stringify(target, null, 2), filename, 'application/json');
-
-        // Note: I missed the dropdown in HTML. I should probably add it or use a native select.
+        toggleModal(modalExport, true);
     });
 
-    // Overriding Export to support CSV/TXT as per SRS via a simple confirm flow or just JSON for now. 
-    // I will refactor to "Prompt" for V1.
-    btnExport.onclick = () => {
-        const selected = urls.filter(u => u.selected);
-        const target = selected.length > 0 ? selected : urls;
-        if (target.length === 0) return;
+    modalExport.addEventListener('click', (e) => {
+        if (e.target.tagName === 'BUTTON' && e.target.dataset.format) {
+            const format = e.target.dataset.format;
+            const selected = urls.filter(u => u.selected);
+            const target = selected.length > 0 ? selected : urls;
 
-        // Create a temporary dialog or use browser prompt
-        // Native PROMPT is ugly but works for MVP
-        const format = prompt("Enter format (json, csv, txt):", "json");
-        if (!format) return;
+            if (target.length === 0) return;
 
-        const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+            const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
 
-        if (format.toLowerCase() === 'csv') {
-            UTILS.downloadFile(UTILS.toCSV(target), `urls_${timestamp}.csv`, 'text/csv');
-        } else if (format.toLowerCase() === 'txt') {
-            const text = target.map(u => u.url).join('\n');
-            UTILS.downloadFile(text, `urls_${timestamp}.txt`, 'text/plain');
-        } else {
-            UTILS.downloadFile(JSON.stringify(target, null, 2), `urls_${timestamp}.json`, 'application/json');
+            if (format === 'csv') {
+                UTILS.downloadFile(UTILS.toCSV(target), `urls_${timestamp}.csv`, 'text/csv');
+            } else if (format === 'txt') {
+                const text = target.map(u => u.url).join('\n');
+                UTILS.downloadFile(text, `urls_${timestamp}.txt`, 'text/plain');
+            } else {
+                UTILS.downloadFile(JSON.stringify(target, null, 2), `urls_${timestamp}.json`, 'application/json');
+            }
+            toggleModal(modalExport, false);
         }
-    };
+    });
 
-    btnImport.addEventListener('change', (e) => {
+    // Import Trigger
+    btnImportTrigger.addEventListener('click', () => {
+        fileInput.click();
+    });
+
+    fileInput.addEventListener('change', (e) => {
         const file = e.target.files[0];
         if (!file) return;
+
+        // Reset value so same file can be selected again
+        e.target.value = '';
 
         const reader = new FileReader();
         reader.onload = (event) => {
             try {
-                // Try JSON first
                 let newUrls = [];
                 const content = event.target.result;
 
                 if (file.name.endsWith('.json')) {
                     newUrls = JSON.parse(content);
                 } else if (file.name.endsWith('.txt')) {
-                    // Split lines
                     newUrls = content.split('\n').filter(l => l.trim()).map(url => ({
                         id: crypto.randomUUID(),
                         url: url.trim(),
@@ -251,14 +241,21 @@ document.addEventListener('DOMContentLoaded', () => {
                         timestamp: new Date().toISOString()
                     }));
                 }
-                // (CSV logic omitted for brevity in V1, can add if requested)
 
-                // Merge
                 if (Array.isArray(newUrls)) {
-                    urls = [...urls, ...newUrls].slice(0, 100);
+                    // Logic Change: OVERWRITE instead of Append per user request logic ("Fresh link board")
+                    // We can ask simply: "Replace current list?" or just do it as requested.
+                    // User said: "fresh link board should be there".
+
+                    if (urls.length > 0) {
+                        if (!confirm("Start fresh? This will overwrite your current list.")) {
+                            return; // User cancelled
+                        }
+                    }
+
+                    urls = newUrls.slice(0, 100);
                     saveUrls();
                     updateUI();
-                    alert(`Imported ${newUrls.length} URLs.`);
                 }
             } catch (err) {
                 alert("Error importing file");
@@ -268,22 +265,26 @@ document.addEventListener('DOMContentLoaded', () => {
         reader.readAsText(file);
     });
 
+    // Open with Modal
     btnOpen.addEventListener('click', () => {
         const selected = urls.filter(u => u.selected);
         if (selected.length === 0) return;
+        toggleModal(modalOpen, true);
+    });
 
-        // Prompt for mode
-        // SRS FR-7.2: "Options: New Window, Current Window, Incognito"
-        // Using prompt again for MVP simplicity
-        const mode = prompt("Open in: 'new', 'current', or 'incognito'?", "new");
-        if (!mode) return;
+    modalOpen.addEventListener('click', (e) => {
+        if (e.target.tagName === 'BUTTON' && e.target.dataset.mode) {
+            const mode = e.target.dataset.mode;
+            const selected = urls.filter(u => u.selected);
+            const urlStrings = selected.map(u => u.url);
 
-        const urlStrings = selected.map(u => u.url);
-        chrome.runtime.sendMessage({
-            type: 'OPEN_URLS',
-            urls: urlStrings,
-            windowType: mode.toLowerCase()
-        });
+            chrome.runtime.sendMessage({
+                type: 'OPEN_URLS',
+                urls: urlStrings,
+                windowType: mode
+            });
+            toggleModal(modalOpen, false);
+        }
     });
 
     // Initial Load
