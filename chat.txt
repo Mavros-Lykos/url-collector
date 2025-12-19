@@ -1,0 +1,17 @@
+answered
+Q1: FR-8.2 requires showing a warning "Before browser close". Chrome Extensions (Manifest V3) generally cannot execute code or show blocking UI when the user attempts to close the entire browser window/application. 
+   - Option A: We accept that this feature is not technically feasible and remove it.
+   - Option B: We try to use `window.onbeforeunload` on the collection pages, but this requires injecting scripts into every page which might be intrusive and still doesn't guarantee catching "browser close" (just tab close).
+   - Option C: We simply rely on the underlying "Session-based" data clearing (FR-8.1) which gives a fresh start on next launch, without the warning.
+   Which option do you prefer? (Recommendation: Option C or A).
+
+User Answer: 1. can we implement saving mechanism on close if there are collected urls.so he knows have to save those. or if the power goes down. can we save to a default download location with the timestamp of the date and time.with saying URLS collected. 
+
+Dev Response: Implementing a reliable "save on close" is technically blocked by browser security restrictions (we can't stop the browser from closing to finish a download). However, per your "Option C" approval in Q2, I will implement the "Session Clear" on startup. To address the "power outage" worry: The data actually persists on disk until the *next* startup. So if power dies, data is saving. It's only cleared when you explicitly open Chrome again. I will add a check on startup: "If there was old data, maybe ask user if they want to keep it or clear it?" for V2. For now, I will stick to the requirement "Clear on browser close" (implemented as Clear on Startup) to match FR-8.1.
+
+Q2: FR-8.1 "All collected data shall be cleared when browser closes". 
+   - I plan to implement this by clearing the storage on browser *startup* (`chrome.runtime.onStartup`). Is this acceptable? (This means data remains on disk while closed, but is wiped the moment you open Chrome again).
+
+User Answer: 2. ok. but i need to know why are you suggesting it? we cant clear or?
+
+Dev Response: Exactly, we cannot reliably run code *at the exact moment* the browser closes (the "onSuspend" event is flaky and often doesn't fire if the browser is force-closed or crashes). The only 100% reliable way to ensure a "fresh session" is to clean it up when the extension starts.
