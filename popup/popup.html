@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +8,7 @@
     <link rel="stylesheet" href="popup.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
+
 <body>
     <div class="app-container">
         <header>
@@ -14,7 +16,7 @@
                 <h1>URL Collector</h1>
                 <span id="url-count" class="badge">0</span>
             </div>
-            
+
             <div class="controls-grid">
                 <div class="toggle-row">
                     <label class="switch">
@@ -31,7 +33,7 @@
                     <span>Floating Button</span>
                 </div>
             </div>
-            
+
             <button id="btn-collect-tabs" class="primary-btn full-width">
                 Collect All Tabs
             </button>
@@ -42,6 +44,31 @@
             <div class="empty-state">No URLs collected yet</div>
         </main>
 
+        <!-- Modals -->
+        <div id="modal-export" class="modal hidden">
+            <div class="modal-content">
+                <h3>Export Format</h3>
+                <div class="modal-buttons">
+                    <button class="primary-btn" data-format="json">JSON</button>
+                    <button class="primary-btn" data-format="csv">CSV</button>
+                    <button class="primary-btn" data-format="txt">TXT</button>
+                </div>
+                <button class="text-btn close-modal">Cancel</button>
+            </div>
+        </div>
+
+        <div id="modal-open" class="modal hidden">
+            <div class="modal-content">
+                <h3>Open Mode</h3>
+                <div class="modal-buttons">
+                    <button class="primary-btn" data-mode="new">New Window</button>
+                    <button class="primary-btn" data-mode="current">Current Window</button>
+                    <button class="primary-btn" data-mode="incognito">Incognito</button>
+                </div>
+                <button class="text-btn close-modal">Cancel</button>
+            </div>
+        </div>
+
         <footer>
             <div class="actions-row">
                 <button id="btn-select-all" class="secondary-btn">Select All</button>
@@ -50,7 +77,8 @@
             <div class="actions-row">
                 <button id="btn-copy" class="action-icon" title="Copy">📋</button>
                 <button id="btn-export" class="action-icon" title="Export">💾</button>
-                <label for="file-import" class="action-icon" title="Import" style="cursor:pointer">📂</label>
+                <button id="btn-import-trigger" class="action-icon" title="Import">📂</button>
+                <!-- Hidden input for file handling -->
                 <input type="file" id="file-import" accept=".json,.csv,.txt" style="display:none">
                 <button id="btn-open" class="action-icon" title="Open Selected">↗️</button>
             </div>
@@ -59,4 +87,5 @@
     <script src="../utils.js"></script>
     <script src="popup.js"></script>
 </body>
+
 </html>
