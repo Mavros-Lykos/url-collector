@@ -9,7 +9,8 @@
     "scripting",
     "activeTab",
     "clipboardWrite",
-    "downloads" 
+    "downloads",
+    "favicon"
   ],
   "host_permissions": [
     "<all_urls>"
@@ -27,9 +28,15 @@
   },
   "content_scripts": [
     {
-      "matches": ["<all_urls>"],
-      "js": ["content/content.js"],
-      "css": ["content/content.css"],
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "content/content.js"
+      ],
+      "css": [
+        "content/content.css"
+      ],
       "run_at": "document_end"
     }
   ],
@@ -40,8 +47,12 @@
   },
   "web_accessible_resources": [
     {
-      "resources": ["icons/icon.png"],
-      "matches": ["<all_urls>"]
+      "resources": [
+        "icons/icon.png"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
     }
   ]
 }
