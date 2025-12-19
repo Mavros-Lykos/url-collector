@@ -43,22 +43,27 @@ chrome.runtime.onStartup.addListener(() => {
     });
 });
 
-// Auto-Collection Listener (Issue 4)
+// Auto-Collection Listener (Issue 4 - Improved for Shorts/SPAs)
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-    if (changeInfo.status === 'complete' && tab.url && tab.url.startsWith('http')) {
+    // Check if URL changed (SPA navigation) OR page finished loading
+    if ((changeInfo.status === 'complete' && tab.url) || (changeInfo.url)) {
+
+        const currentUrl = tab.url;
+        if (!currentUrl || !currentUrl.startsWith('http')) return;
+
         chrome.storage.local.get(['settings', 'urls'], (result) => {
             if (result.settings && result.settings.collectionEnabled) {
                 const urls = result.urls || [];
 
                 // Avoid duplicates in auto-mode
-                if (!urls.some(u => u.url === tab.url)) {
+                if (!urls.some(u => u.url === currentUrl)) {
                     if (urls.length >= 100) return; // Limit
 
                     const newUrl = {
                         id: crypto.randomUUID(),
-                        url: tab.url,
-                        title: tab.title,
-                        description: "", // Can't scrape easily here without injection, leaving blank for auto
+                        url: currentUrl,
+                        title: tab.title || "New Page",
+                        description: "",
                         thumbnail: "",
                         timestamp: new Date().toISOString(),
                         selected: false
@@ -67,9 +72,6 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
                     urls.push(newUrl);
                     chrome.storage.local.set({ urls }, () => {
                         updateBadge(urls.length);
-                        // Optional: Send message to content script to show toast? 
-                        // Might be too noisy if happening on every page load.
-                        // User requirement: "actively collect one by one... whenever url is changes"
                     });
                 }
             }
