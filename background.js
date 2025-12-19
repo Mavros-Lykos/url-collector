@@ -18,16 +18,63 @@ chrome.runtime.onInstalled.addListener(() => {
             chrome.storage.local.set({ urls: [] });
         }
     });
+
+    // Fix Issue 5: Inject content script into existing tabs
+    chrome.tabs.query({ url: ["http://*/*", "https://*/*"] }, (queryTabs) => {
+        for (const tab of queryTabs) {
+            chrome.scripting.executeScript({
+                target: { tabId: tab.id },
+                files: ['content/content.js']
+            }).catch(() => { }); // Ignore errors on restricted pages
+
+            chrome.scripting.insertCSS({
+                target: { tabId: tab.id },
+                files: ['content/content.css']
+            }).catch(() => { });
+        }
+    });
 });
 
 // Clear data on Startup (Session-based requirement)
-// As discussed: We cannot reliably detect "On Close", so we clean "On Startup".
 chrome.runtime.onStartup.addListener(() => {
     console.log("Browser started. Clearing session data.");
     chrome.storage.local.set({ urls: [] }, () => {
-        // Optionally update badge
         updateBadge(0);
     });
+});
+
+// Auto-Collection Listener (Issue 4)
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+    if (changeInfo.status === 'complete' && tab.url && tab.url.startsWith('http')) {
+        chrome.storage.local.get(['settings', 'urls'], (result) => {
+            if (result.settings && result.settings.collectionEnabled) {
+                const urls = result.urls || [];
+
+                // Avoid duplicates in auto-mode
+                if (!urls.some(u => u.url === tab.url)) {
+                    if (urls.length >= 100) return; // Limit
+
+                    const newUrl = {
+                        id: crypto.randomUUID(),
+                        url: tab.url,
+                        title: tab.title,
+                        description: "", // Can't scrape easily here without injection, leaving blank for auto
+                        thumbnail: "",
+                        timestamp: new Date().toISOString(),
+                        selected: false
+                    };
+
+                    urls.push(newUrl);
+                    chrome.storage.local.set({ urls }, () => {
+                        updateBadge(urls.length);
+                        // Optional: Send message to content script to show toast? 
+                        // Might be too noisy if happening on every page load.
+                        // User requirement: "actively collect one by one... whenever url is changes"
+                    });
+                }
+            }
+        });
+    }
 });
 
 // Update Badge Helper
