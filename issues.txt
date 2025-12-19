@@ -1,21 +1,23 @@
-# Known Issues & Feature Requests (V1.0 Feedback)
+# Known Issues & Feature Requests (V1.1 Feedback)
 
-1. **UX/UI Interaction**: 
-   - Uses native `prompt()` for inputs (Export format, Open mode), which is poor UX.
-   - **Fix**: Replace with proper UI buttons/modals (e.g., specific buttons for "JSON", "CSV", "TXT" or a nice modal dialog).
+## Solved Integration Issues
+- [x] **UX/UI Interaction**: Buttons and Modals are working well.
+- [x] **Favicons**: Icons are loading correctly.
+- [x] **Floating Button Injection**: Works great on open/reload.
+- [x] **Import Logic**: Clears old data (Fresh board).
+- [x] **Import Formats**: JSON and TXT import correctly.
 
-2. **Import Behavior**:
-   - Currently appends URLs to the list.
-   - **Requirement**: "Fresh link board". Importing should overwrite/clear the existing list so the user starts with just the imported set.
+## Active Issues
 
-3. **Favicons Missing**:
-   - URLs in the list do not show their website icons.
-   - **Fix**: Implement favicon fetching (using Google Favicon service or Chrome API).
+1. **CSV Import Failure**: 
+   - Importing from CSV clears the board but fails to populate the list with URLs. 
+   - **Root Cause**: The CSV parsing logic implementation was possibly omitted or is buggy in `popup.js`.
 
-4. **Auto-Collection Logic**:
-   - "Auto Collection" toggle currently doesn't seem to actively collect URLs as the user browses.
-   - **Fix**: Implement `chrome.tabs.onUpdated` listener in background script to automatically capturing URLs when the user navigates, if the mode is enabled.
+2. **Auto-Collection Logic (YouTube Shorts)**:
+   - **Scenario**: When scrolling YouTube Shorts, the URL updates in the address bar (History API pushState), but `chrome.tabs.onUpdated` might not be triggering 'complete' status in the way we expect, or we are catching the "previous" URL before the new one settles.
+   - **Specific Symptom**: It "continues to get the previous short url" or misses the new one unless explicitly moved further.
+   - **Diagnosis**: YouTube relies heavily on `pushState` for navigation without full page reloads. Our listener checks `changeInfo.status === 'complete'`, which happens on load, but for SPA navigation (Shorts), we need to listen for **URL changes specifically**.
 
-5. **Floating Button Injection**:
-   - Button doesn't appear on tabs that were already open before the extension was installed/reloaded (requires refresh).
-   - **Fix**: Inject content script programmatically into all existing tabs upon installation/update.
+## Next Steps
+- Implement robust CSV parsing logic.
+- Refine `background.js` listener to handle `changeInfo.url` explicitly for Single Page Applications (SPAs) like YouTube, rather than waiting for `status: complete`.
