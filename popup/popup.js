@@ -240,6 +240,26 @@ document.addEventListener('DOMContentLoaded', () => {
                         title: "Imported URL",
                         timestamp: new Date().toISOString()
                     }));
+                } else if (file.name.endsWith('.csv')) {
+                    const rows = content.split('\n');
+                    // Simple CSV Parse: Expects Title,URL,Description,Timestamp
+                    newUrls = rows.slice(1).filter(r => r.trim()).map(row => {
+                        // Very basic CSV parser: split by comma if not in quotes
+                        // For this MVP, we will try a simple regex
+                        const matches = row.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g);
+
+                        if (!matches || matches.length < 2) return null; // Needs at least Title/URL
+
+                        const clean = (s) => s ? s.replace(/^"|"$/g, '').replace(/""/g, '"') : "";
+                        return {
+                            id: crypto.randomUUID(),
+                            title: clean(matches[0]),
+                            url: clean(matches[1]),
+                            description: clean(matches[2]),
+                            timestamp: clean(matches[3]) || new Date().toISOString(),
+                            selected: false
+                        };
+                    }).filter(u => u !== null);
                 }
 
                 if (Array.isArray(newUrls)) {
