@@ -1,0 +1,305 @@
+Software Requirements Specification
+URL Collector Chrome Extension
+Version: 1.0
+
+Date: December 19, 2025
+
+Document Status: Draft
+
+Table of Contents
+Introduction
+Overall Description
+Functional Requirements
+Non-Functional Requirements
+User Interface Requirements
+Data Management
+Version Roadmap
+Constraints and Assumptions
+1. Introduction
+1.1 Purpose
+This document specifies the requirements for a Chrome browser extension that allows users to collect, manage, and share URLs from their browsing sessions. The extension is designed for users who need to quickly capture and organize web links while browsing platforms like YouTube, Pinterest, and other websites.
+
+1.2 Scope
+Product Name: URL Collector Chrome Extension
+
+Target Platform: Google Chrome Browser (Manifest V3)
+
+Key Features:
+
+Enable/disable URL collection mode
+Floating button for quick URL capture
+Automatic metadata extraction (title, description, thumbnail)
+Bulk URL management with selection interface
+Export functionality (JSON, CSV, TXT)
+Copy to clipboard for Telegram sharing
+Import and batch open URLs
+1.3 Definitions and Acronyms
+SRS: Software Requirements Specification
+URL: Uniform Resource Locator
+UI: User Interface
+CSV: Comma-Separated Values
+JSON: JavaScript Object Notation
+Toast: Brief notification message
+Badge: Visual indicator on extension icon showing count
+
+2. Overall Description
+
+2.1 Product Perspective
+The URL Collector is a standalone Chrome extension that operates within the browser environment. It integrates with Chrome's extension APIs and storage mechanisms to provide seamless URL collection during browsing sessions.
+
+2.2 Product Functions
+
+Toggle collection mode on/off
+Capture URLs with metadata on-demand
+Display collection count via badge
+Manage collected URLs through popup interface
+Select/deselect URLs for operations
+Export data in multiple formats
+Copy URLs to clipboard
+Import and batch open URLs
+Automatic cleanup on browser close
+
+2.3 User Characteristics
+Primary Users: Content curators, researchers, social media managers, and general users who need to collect and share multiple URLs efficiently.
+
+Technical Expertise: Basic computer and browser usage skills. No programming knowledge required.
+
+3. Functional Requirements
+
+3.1 Extension State Management
+FR-1.1: Extension shall provide a toggle to enable/disable auto collection mode.
+
+FR-1.2: Extension icon shall visually indicate current state (enabled/disabled).
+
+FR-1.3: State shall persist across browser restarts using Chrome storage.
+
+FR-1.4: Toggle control shall be accessible from the extension popup.
+
+FR-1.5: Extension shall provide a button to collect all the urls in the tabs of the current window.
+
+3.2 Floating Collection Button
+
+FR-2.1: A floating "+" button shall appear when collection mode is enabled.
+
+FR-2.2: User shall have option to enable/disable the floating button independently.
+
+FR-2.3: Default position: bottom-right corner of the viewport.
+
+FR-2.4: Button shall remain visible while scrolling (fixed position).
+
+FR-2.5: Clicking the button shall collect current page URL and metadata.
+
+FR-2.6: Future versions shall support:
+
+V2: Positioning in all four corners
+  : customizing interface button colors etc.
+V3: Draggable positioning
+
+3.3 URL and Metadata Collection
+
+FR-3.1: System shall collect the following data on button click:
+
+URL (current page URL)
+Title (page title from document.title)
+Description (first 300 characters from page content or meta description)
+Thumbnail (og:image or first prominent image, stored as base64)
+Timestamp (date and time of collection)
+FR-3.2: Upon successful collection, a toast notification shall appear confirming "URL collected".
+
+FR-3.3: Badge on extension icon shall increment to show total collected URLs.
+
+FR-3.4: Maximum storage limit: 100 URLs.
+
+FR-3.5: When limit is reached, user shall be notified and prevented from collecting more.
+
+3.4 Extension Popup Interface
+
+FR-4.1: Clicking extension icon shall open popup window.
+
+FR-4.2: Popup shall display:
+
+Button for collecting all the urls across all the window
+Enable/Disable toggle for auto collection mode
+Enable/Disable toggle for floating button
+Current count of collected URLs
+List of collected URLs with checkboxes
+Action buttons (Select All, Clear All, Delete Selected, Copy, Export, Import)
+FR-4.3: Each URL entry shall show: Title, URL, Thumbnail (optional), and Timestamp.
+
+FR-4.4: Users shall be able to select/deselect individual URLs via checkboxes.
+
+FR-4.5: "Select All" button shall select all URLs.
+
+FR-4.6: "Clear All" button shall delete all collected URLs after confirmation.
+
+FR-4.7: "Delete Selected" button shall delete only checked URLs.
+
+3.5 Copy to Clipboard
+FR-5.1: "Copy" button shall copy selected URLs to clipboard.
+
+FR-5.2: Format: One URL per line, plain text.
+
+FR-5.3: Confirmation message shall appear after successful copy.
+
+FR-5.4: If no URLs selected, all URLs shall be copied.
+
+3.6 Export Functionality
+FR-6.1: "Export" button shall provide format selection dropdown:
+
+TXT: One URL per line
+CSV: Columns: Title, URL, Description, Thumbnail URL, Timestamp
+JSON: Full data structure including all metadata
+FR-6.2: File shall be downloaded with timestamp in filename.
+
+FR-6.3: Export shall include only selected URLs, or all if none selected.
+
+FR-6.4: After export, stored thumbnails (base64 images) shall be deleted to free space.
+
+3.7 Import and Batch Open
+FR-7.1: "Import" button shall allow users to upload previously exported JSON/TXT/CSV file.
+
+FR-7.2: After import, user shall be presented with options:
+
+Open in New Window
+Open in Current Window (replace tabs)
+Open in Incognito Window
+FR-7.3: User shall be able to select specific URLs to open via checkboxes.
+
+FR-7.4: Selected URLs shall open sequentially in chosen mode.
+
+3.8 Data Cleanup and Warnings
+FR-8.1: All collected data shall be cleared when browser closes.
+
+FR-8.2: Before browser close, if URLs are collected but not exported, extension shall show warning notification.
+
+FR-8.3: Warning shall include option to quickly export before closing.
+
+FR-8.4: Thumbnails shall be deleted after export or browser close.
+
+4. Non-Functional Requirements
+
+4.1 Performance
+
+URL collection shall complete within 1 second
+Popup shall load within 500ms
+Extension shall not impact page load times by more than 100ms
+Maximum memory usage: 50MB for 100 URLs with thumbnails
+
+4.2 Usability
+
+Interface shall be intuitive requiring no user manual
+All actions shall provide visual feedback
+Toast notifications shall auto-dismiss after 3 seconds
+Error messages shall be clear and actionable
+
+4.3 Reliability
+
+Data shall persist across browser crashes (until browser close)
+Extension shall handle network failures gracefully
+Failed collections shall not crash the extension
+
+4.4 Compatibility
+
+Chrome version 88 or higher
+Manifest V3 compliance
+Works on all websites (no domain restrictions)
+
+5. User Interface Requirements
+
+5.1 Floating Button
+
+Size: 56x56 pixels
+Color: Primary brand color(light blue) with white "+" icon
+Position: 20px from bottom-right corner
+Shadow: Elevated appearance for visibility
+Hover effect: Slight scale increase
+Click animation: Brief scale-down effect
+
+5.2 Extension Popup
+
+Dimensions: 400px width × 600px height
+Sections: Header (toggles), List (URLs), Footer (actions)
+Scrollable list when URLs exceed viewport
+Responsive layout for different screen sizes
+Clear visual hierarchy
+
+5.3 Toast Notifications
+
+Position: Top-right corner of page
+Duration: 3 seconds
+Types: Success (green), Error (red), Warning (yellow), Info (blue)
+Dismissible with close button
+
+6. Data Management
+6.1 Data Structure
+{
+  "urls": [
+    {
+      "id": "unique-id-string",
+      "url": "https://example.com",
+      "title": "Page Title",
+      "description": "First 300 chars...",
+      "thumbnail": "base64-encoded-image",
+      "timestamp": "2025-12-19T10:30:00Z",
+      "selected": false
+    }
+  ],
+  "settings": {
+    "collectionEnabled": true,
+    "floatingButtonEnabled": true,
+    "floatingButtonPosition": "bottom-right"
+  }
+}
+6.2 Storage
+
+Chrome Local Storage for URL data
+Chrome Sync Storage for settings (optional)
+Session-based: Clears on browser close
+Maximum 100 URLs per session
+
+7. Version Roadmap
+
+7.1 Version 1.0 (Current)
+
+Basic collection with floating button (bottom-right only)
+Enable/disable toggles
+Copy to clipboard
+Export (JSON, CSV, TXT)
+Import and batch open
+Select all/delete functionality
+Auto-cleanup on browser close
+
+7.2 Version 2.0 (Future)
+
+Floating button positioning in all four corners
+Settings page for customization
+Search/filter collected URLs
+Manual tags/categories
+customization of the interface and the button colors
+
+7.3 Version 3.0 (Future)
+Draggable floating button
+Custom button styles
+Keyboard shortcuts
+Telegram Bot integration (send URLs one by one)
+Cloud sync option
+
+8. Constraints and Assumptions
+
+8.1 Technical Constraints
+
+Chrome Manifest V3 limitations
+Storage quota limits (~10MB for local storage)
+Cannot access content in cross-origin iframes
+Thumbnail quality limited by page og:image
+
+8.2 Assumptions
+
+User has stable internet connection
+Pages have proper metadata (title, description)
+User will export data before browser close if needed
+Telegram sharing will be manual via clipboard in V1
+Users understand basic browser extension concepts
+End of Document
+
+This SRS document is subject to review and approval by stakeholders.
