@@ -1,0 +1,21 @@
+# Known Issues & Feature Requests (V1.0 Feedback)
+
+1. **UX/UI Interaction**: 
+   - Uses native `prompt()` for inputs (Export format, Open mode), which is poor UX.
+   - **Fix**: Replace with proper UI buttons/modals (e.g., specific buttons for "JSON", "CSV", "TXT" or a nice modal dialog).
+
+2. **Import Behavior**:
+   - Currently appends URLs to the list.
+   - **Requirement**: "Fresh link board". Importing should overwrite/clear the existing list so the user starts with just the imported set.
+
+3. **Favicons Missing**:
+   - URLs in the list do not show their website icons.
+   - **Fix**: Implement favicon fetching (using Google Favicon service or Chrome API).
+
+4. **Auto-Collection Logic**:
+   - "Auto Collection" toggle currently doesn't seem to actively collect URLs as the user browses.
+   - **Fix**: Implement `chrome.tabs.onUpdated` listener in background script to automatically capturing URLs when the user navigates, if the mode is enabled.
+
+5. **Floating Button Injection**:
+   - Button doesn't appear on tabs that were already open before the extension was installed/reloaded (requires refresh).
+   - **Fix**: Inject content script programmatically into all existing tabs upon installation/update.
