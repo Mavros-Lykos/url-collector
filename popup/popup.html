@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URL Collector</title>
+    <link rel="stylesheet" href="popup.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <header>
+            <div class="header-top">
+                <h1>URL Collector</h1>
+                <span id="url-count" class="badge">0</span>
+            </div>
+            
+            <div class="controls-grid">
+                <div class="toggle-row">
+                    <label class="switch">
+                        <input type="checkbox" id="toggle-collection">
+                        <span class="slider round"></span>
+                    </label>
+                    <span>Auto Collection</span>
+                </div>
+                <div class="toggle-row">
+                    <label class="switch">
+                        <input type="checkbox" id="toggle-button">
+                        <span class="slider round"></span>
+                    </label>
+                    <span>Floating Button</span>
+                </div>
+            </div>
+            
+            <button id="btn-collect-tabs" class="primary-btn full-width">
+                Collect All Tabs
+            </button>
+        </header>
+
+        <main id="url-list" class="url-list">
+            <!-- Items injected here -->
+            <div class="empty-state">No URLs collected yet</div>
+        </main>
+
+        <footer>
+            <div class="actions-row">
+                <button id="btn-select-all" class="secondary-btn">Select All</button>
+                <button id="btn-delete" class="danger-btn">Delete</button>
+            </div>
+            <div class="actions-row">
+                <button id="btn-copy" class="action-icon" title="Copy">📋</button>
+                <button id="btn-export" class="action-icon" title="Export">💾</button>
+                <label for="file-import" class="action-icon" title="Import" style="cursor:pointer">📂</label>
+                <input type="file" id="file-import" accept=".json,.csv,.txt" style="display:none">
+                <button id="btn-open" class="action-icon" title="Open Selected">↗️</button>
+            </div>
+        </footer>
+    </div>
+    <script src="../utils.js"></script>
+    <script src="popup.js"></script>
+</body>
+</html>
