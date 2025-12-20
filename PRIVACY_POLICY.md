@@ -6,7 +6,7 @@ Your privacy is important to us. It is URL Collector & Sharer's policy to respec
 
 ## 1. Information We Collect
 
-We only collect information about you if we have a reason to do so—specifically, to provide our services to you using the extension's features.
+We do not collect or store your data on our servers. The extension processes and stores information **locally on your device** solely to enable its functionality.
 
 ### Usage Data (Locally Stored)
 When you use the extension, we store the following data **locally on your device** within the Chrome browser's storage system:
@@ -41,7 +41,9 @@ The extension may fetch favicons (website icons) to display in the user interfac
 
 ## 6. Changes to This Policy
 
-We may update our Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page.
+We may update our Privacy Policy from time to time to reflect changes in our practices or for other operational, legal, or regulatory reasons. 
+
+Since this extension does not collect email addresses, we cannot notify you directly. We encourage you to review this Privacy Policy periodically when you update the extension. Significant changes will be highlighted in the "What's New" section of the extension's Chrome Web Store listing or via a notification within the extension itself upon update.
 
 ## 7. Contact Us
 
