@@ -7,7 +7,7 @@ let toastElement = null;
 function init() {
     chrome.storage.local.get(['settings'], (result) => {
         const settings = result.settings || {};
-        if (settings.collectionEnabled && settings.floatingButtonEnabled) {
+        if (settings.floatingButtonEnabled) {
             createFloatingButton(settings.floatingButtonPosition);
         }
     });
@@ -16,7 +16,9 @@ function init() {
     chrome.storage.onChanged.addListener((changes, area) => {
         if (area === 'local' && changes.settings) {
             const newSettings = changes.settings.newValue;
-            if (newSettings.collectionEnabled && newSettings.floatingButtonEnabled) {
+            // logic: If Floating Button is enabled, show it.
+            // Irrespective of Auto-Collection mode.
+            if (newSettings.floatingButtonEnabled) {
                 if (!floatingButton) {
                     createFloatingButton(newSettings.floatingButtonPosition);
                 }
