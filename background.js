@@ -16,6 +16,9 @@ chrome.runtime.onInstalled.addListener(() => {
         }
         if (!result.urls) {
             chrome.storage.local.set({ urls: [] });
+        } else {
+            // Restore badge count if data exists (Fix for badge disappearing on reload)
+            updateBadge(result.urls.length);
         }
     });
 
