@@ -285,6 +285,14 @@ document.addEventListener('DOMContentLoaded', () => {
         reader.readAsText(file);
     });
 
+    // Listen for storage changes (e.g. Auto-Collection) to update UI real-time
+    chrome.storage.onChanged.addListener((changes, area) => {
+        if (area === 'local' && changes.urls) {
+            urls = changes.urls.newValue;
+            updateUI();
+        }
+    });
+
     // Open with Modal
     btnOpen.addEventListener('click', () => {
         const selected = urls.filter(u => u.selected);
