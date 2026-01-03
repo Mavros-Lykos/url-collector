@@ -2,7 +2,7 @@
 
 [![Version](https://img.shields.io/badge/version-1.3.1-blue.svg)](https://github.com/Mavros-Lykos/url-collector)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Chrome Web Store](https://img.shields.io/badge/Chrome-Web%20Store-green.svg)](https://chrome.google.com/webstore/detail/your-extension-id)
+[![Chrome Web Store](https://img.shields.io/badge/Chrome-Web%20Store-green.svg)](https://chromewebstore.google.com/detail/oemnebpccledopipjhjfcgdnagpnbfce?utm_source=item-share-cb)
 
 ![URL Collector Banner](Marquee.png)
 
@@ -37,30 +37,44 @@ Tired of messy bookmarks and lost tabs? URL Collector provides a temporary, sess
 
 ### 🚀 Getting Started
 
-#### Installation (Manual Mode)
-Since this extension is in development, you can install it manually:
-
-1.  **Clone the repository**:
-    ```bash
-    git clone https://github.com/Mavros-Lykos/url-collector.git
-    ```
-2.  **Open Chrome Extensions**:
-    Open Chrome and navigate to `chrome://extensions/`.
-3.  **Enable Developer Mode**:
-    Toggle the **Developer mode** switch in the top-right corner.
-4.  **Load Unpacked**:
-    Click the **Load unpacked** button and select the root folder of this project.
-
-#### 📖 How to Use
-
-1.  **Collect a URL**: Click the floating `+` button on any webpage to save it to your list.
-2.  **Manage Your List**: Click the extension icon in your toolbar to open the manager.
-3.  **Use Auto-Mode**: Toggle "Auto Collection" in the popup to capture links as you browse without clicking anything.
-4.  **Export Your Data**: Use the "Export" button to save your links as a JSON, CSV, or TXT file for later use.
-5.  **Batch Open**: Import a saved list and use the "Open" options to launch all links in a fresh window.
+#### 🌐 Browsers Supported
+- **Chrome**: [Install from Web Store](https://chromewebstore.google.com/detail/oemnebpccledopipjhjfcgdnagpnbfce?utm_source=item-share-cb)
+- **Edge & Firefox**: Support coming very soon! 🚀
 
 ---
 
-**Next Section: Technical Details & Privacy** (Awaiting your approval...)
+### 📺 Video Demonstration
+Watch the extension in action here:
+<p align="center">
+  <a href="https://www.youtube.com/watch?v=DXIpi4KvEno">
+    <img src="https://img.youtube.com/vi/DXIpi4KvEno/0.jpg" alt="URL Collector Demo">
+  </a>
+</p>
+
+
+---
+
+### 🛠️ Technical Details
+
+- **Framework**: Manifest V3 (Latest Chrome Extension Standard)
+- **Storage**: `chrome.storage.local` (Offline-first architecture)
+- **Permissions**:
+    - `storage`: For saving your session data.
+    - `tabs`: For cross-tab management and batch opening.
+    - `scripting`: For the non-intrusive floating button.
+    - `favicon`: To display site icons in your list.
+
+### 🛡️ Privacy & Security
+- **No Cloud Required**: All data is stored locally on your machine.
+- **Session-Based**: Collected URLs are automatically cleared when you restart your browser to keep your workspace clean.
+- **No Tracking**: We do not track your browsing history or data.
+- Read our full [Privacy Policy](PRIVACY_POLICY.md).
+
+---
+
+### 🤝 Contributing & Support
+Contributions are welcome! Feel free to open an issue or submit a pull request.
+
+**Copyright © 2026 Mavros-Lykos.**
 
 
