@@ -18,4 +18,22 @@ Tired of messy bookmarks and lost tabs? URL Collector provides a temporary, sess
 
 ---
 
-**Next Section: Key Features** (Awaiting your approval for this header section...)
+### ✨ Key Features
+
+- **🔘 Floating Action Button**: A non-intrusive `+` button stays with you as you browse, allowing for one-click URL capture without opening the extension popup.
+- **⚡ Auto-Collection Mode**: Enable this to automatically capture Every URL you visit. Perfect for research sessions or scrolling through social media feeds.
+- **📱 Smart Management UI**: A clean, intuitive popup interface where you can view your collected links, complete with site favicons for easy identification.
+- **🛠️ Bulk Actions**:
+    - Select/Deselect all or specific links.
+    - Delete unwanted catches in bulk.
+    - Copy selected URLs to clipboard in a clean list format.
+- **📥 Import & Export**:
+    - **Export** your session data to **JSON**, **CSV**, or **TXT** formats.
+    - **Import** previously exported files to restore or merge your collection.
+- **📂 Batch Open**: Open your collected links all at once in a **New Window** or **Incognito Mode**.
+- **🔒 Privacy First (Session-Based)**: All collected data is kept locally and cleared when you restart your browser, ensuring a fresh workspace every time.
+
+---
+
+**Next Section: Installation & Usage** (Awaiting your approval...)
+
