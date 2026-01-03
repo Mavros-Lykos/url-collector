@@ -1,7 +1,7 @@
 # 🚀 URL Collector and Sharer
 
 [![Version](https://img.shields.io/badge/version-1.3.1-blue.svg)](https://github.com/Mavros-Lykos/url-collector)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License: GPL v2](https://img.shields.io/badge/License-GPL%20v2-blue.svg)](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html)
 [![Chrome Web Store](https://img.shields.io/badge/Chrome-Web%20Store-green.svg)](https://chromewebstore.google.com/detail/oemnebpccledopipjhjfcgdnagpnbfce?utm_source=item-share-cb)
 
 ![URL Collector Banner](Marquee.png)
