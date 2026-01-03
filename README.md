@@ -35,5 +35,32 @@ Tired of messy bookmarks and lost tabs? URL Collector provides a temporary, sess
 
 ---
 
-**Next Section: Installation & Usage** (Awaiting your approval...)
+### 🚀 Getting Started
+
+#### Installation (Manual Mode)
+Since this extension is in development, you can install it manually:
+
+1.  **Clone the repository**:
+    ```bash
+    git clone https://github.com/Mavros-Lykos/url-collector.git
+    ```
+2.  **Open Chrome Extensions**:
+    Open Chrome and navigate to `chrome://extensions/`.
+3.  **Enable Developer Mode**:
+    Toggle the **Developer mode** switch in the top-right corner.
+4.  **Load Unpacked**:
+    Click the **Load unpacked** button and select the root folder of this project.
+
+#### 📖 How to Use
+
+1.  **Collect a URL**: Click the floating `+` button on any webpage to save it to your list.
+2.  **Manage Your List**: Click the extension icon in your toolbar to open the manager.
+3.  **Use Auto-Mode**: Toggle "Auto Collection" in the popup to capture links as you browse without clicking anything.
+4.  **Export Your Data**: Use the "Export" button to save your links as a JSON, CSV, or TXT file for later use.
+5.  **Batch Open**: Import a saved list and use the "Open" options to launch all links in a fresh window.
+
+---
+
+**Next Section: Technical Details & Privacy** (Awaiting your approval...)
+
 
