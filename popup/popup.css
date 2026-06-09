@@ -170,6 +170,14 @@ input:checked+.slider:before {
     background: #fcfcfc;
 }
 
+.url-check {
+    width: 22px;
+    height: 22px;
+    cursor: pointer;
+    accent-color: var(--primary);
+    flex-shrink: 0;
+}
+
 .item-icon {
     width: 24px;
     height: 24px;
