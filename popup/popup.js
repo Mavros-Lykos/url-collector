@@ -186,68 +186,75 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // Universal Share Logic
+    function shareUrls(baseUrlFn) {
+        const selected = urls.filter(u => u.selected);
+        const target = selected.length > 0 ? selected : urls;
+        
+        if (target.length === 0) {
+            alert('No URLs to share');
+            return;
+        }
+
+        // Use encoded text length (max ~3000) to prevent 400 Bad Request (URI Too Long) from servers.
+        const MAX_ENCODED_CHARS = 3000;
+        let chunks = [];
+        let currentChunk = [];
+        let currentLength = 0;
+
+        target.forEach(u => {
+            const itemText = `${u.title}\n${u.url}`;
+            const estimatedLen = encodeURIComponent(itemText + '\n\n').length;
+            
+            if (currentLength + estimatedLen > MAX_ENCODED_CHARS && currentChunk.length > 0) {
+                chunks.push(currentChunk.join('\n\n'));
+                currentChunk = [itemText];
+                currentLength = estimatedLen;
+            } else {
+                currentChunk.push(itemText);
+                currentLength += estimatedLen;
+            }
+        });
+        
+        if (currentChunk.length > 0) {
+            chunks.push(currentChunk.join('\n\n'));
+        }
+
+        const finalUrls = chunks.map(chunkText => {
+            const match = chunkText.match(/https?:\/\/[^\s]+/);
+            const safeUrl = match ? match[0] : 'https://google.com';
+            return baseUrlFn(encodeURIComponent(safeUrl), encodeURIComponent(chunkText));
+        });
+
+        if (finalUrls.length === 1) {
+            // Only 1 chunk, open it actively
+            chrome.tabs.create({ url: finalUrls[0], active: true });
+        } else {
+            // Multiple chunks. Send chunks 2+ to the background script to open silently.
+            chrome.runtime.sendMessage({
+                type: 'OPEN_URLS',
+                urls: finalUrls.slice(1),
+                windowType: 'current'
+            }, () => {
+                // Once message is safely sent, open the first chunk actively (this closes the popup)
+                chrome.tabs.create({ url: finalUrls[0], active: true });
+            });
+        }
+    }
+
     // Share Buttons
     const btnShareWa = document.getElementById('btn-share-wa');
     if (btnShareWa) {
         btnShareWa.addEventListener('click', () => {
-            const selected = urls.filter(u => u.selected);
-            const target = selected.length > 0 ? selected : urls;
-            
-            if (target.length === 0) {
-                alert('No URLs to share');
-                return;
-            }
-
-            // Chunk URLs to prevent breaking WhatsApp wa.me URL length limits (~2000 chars)
-            const MAX_CHARS = 1800;
-            let chunks = [];
-            let currentChunk = [];
-            let currentLength = 0;
-
-            target.forEach(u => {
-                const itemText = `${u.title}\n${u.url}`;
-                // Calculate the exact URL-encoded length this item will add
-                const estimatedLen = encodeURIComponent(itemText + '\n\n').length;
-                
-                if (currentLength + estimatedLen > MAX_CHARS && currentChunk.length > 0) {
-                    chunks.push(currentChunk.join('\n\n'));
-                    currentChunk = [itemText];
-                    currentLength = estimatedLen;
-                } else {
-                    currentChunk.push(itemText);
-                    currentLength += estimatedLen;
-                }
-            });
-            
-            if (currentChunk.length > 0) {
-                chunks.push(currentChunk.join('\n\n'));
-            }
-
-            // Open each chunk in a new tab with a slight delay to prevent popup blocking
-            chunks.forEach((chunkText, index) => {
-                setTimeout(() => {
-                    const waUrl = `https://wa.me/?text=${encodeURIComponent(chunkText)}`;
-                    chrome.tabs.create({ url: waUrl });
-                }, index * 500); // 500ms delay
-            });
+            shareUrls((safeUrl, encodedText) => `https://wa.me/?text=${encodedText}`);
         });
     }
 
     const btnShareTg = document.getElementById('btn-share-tg');
     if (btnShareTg) {
         btnShareTg.addEventListener('click', () => {
-            const selected = urls.filter(u => u.selected);
-            const target = selected.length > 0 ? selected : urls;
-            
-            if (target.length === 0) {
-                alert('No URLs to share');
-                return;
-            }
-
-            const textToShare = target.map(u => `${u.title}\n${u.url}`).join('\n\n');
-            const tgUrl = `https://t.me/share/url?url=&text=${encodeURIComponent(textToShare)}`;
-            
-            chrome.tabs.create({ url: tgUrl });
+            // Telegram expects the url parameter to be valid, otherwise it redirects to telegram.org
+            shareUrls((safeUrl, encodedText) => `https://t.me/share/url?url=${safeUrl}&text=${encodedText}`);
         });
     }
 
