@@ -198,10 +198,56 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            const textToShare = target.map(u => `${u.title}\n${u.url}`).join('\n\n');
-            const waUrl = `https://wa.me/?text=${encodeURIComponent(textToShare)}`;
+            // Chunk URLs to prevent breaking WhatsApp wa.me URL length limits (~2000 chars)
+            const MAX_CHARS = 1800;
+            let chunks = [];
+            let currentChunk = [];
+            let currentLength = 0;
+
+            target.forEach(u => {
+                const itemText = `${u.title}\n${u.url}`;
+                // Calculate the exact URL-encoded length this item will add
+                const estimatedLen = encodeURIComponent(itemText + '\n\n').length;
+                
+                if (currentLength + estimatedLen > MAX_CHARS && currentChunk.length > 0) {
+                    chunks.push(currentChunk.join('\n\n'));
+                    currentChunk = [itemText];
+                    currentLength = estimatedLen;
+                } else {
+                    currentChunk.push(itemText);
+                    currentLength += estimatedLen;
+                }
+            });
             
-            chrome.tabs.create({ url: waUrl });
+            if (currentChunk.length > 0) {
+                chunks.push(currentChunk.join('\n\n'));
+            }
+
+            // Open each chunk in a new tab with a slight delay to prevent popup blocking
+            chunks.forEach((chunkText, index) => {
+                setTimeout(() => {
+                    const waUrl = `https://wa.me/?text=${encodeURIComponent(chunkText)}`;
+                    chrome.tabs.create({ url: waUrl });
+                }, index * 500); // 500ms delay
+            });
+        });
+    }
+
+    const btnShareTg = document.getElementById('btn-share-tg');
+    if (btnShareTg) {
+        btnShareTg.addEventListener('click', () => {
+            const selected = urls.filter(u => u.selected);
+            const target = selected.length > 0 ? selected : urls;
+            
+            if (target.length === 0) {
+                alert('No URLs to share');
+                return;
+            }
+
+            const textToShare = target.map(u => `${u.title}\n${u.url}`).join('\n\n');
+            const tgUrl = `https://t.me/share/url?url=&text=${encodeURIComponent(textToShare)}`;
+            
+            chrome.tabs.create({ url: tgUrl });
         });
     }
 
