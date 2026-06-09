@@ -186,6 +186,25 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // Share Buttons
+    const btnShareWa = document.getElementById('btn-share-wa');
+    if (btnShareWa) {
+        btnShareWa.addEventListener('click', () => {
+            const selected = urls.filter(u => u.selected);
+            const target = selected.length > 0 ? selected : urls;
+            
+            if (target.length === 0) {
+                alert('No URLs to share');
+                return;
+            }
+
+            const textToShare = target.map(u => `${u.title}\n${u.url}`).join('\n\n');
+            const waUrl = `https://wa.me/?text=${encodeURIComponent(textToShare)}`;
+            
+            chrome.tabs.create({ url: waUrl });
+        });
+    }
+
     // Export with Modal
     btnExport.addEventListener('click', () => {
         toggleModal(modalExport, true);
