@@ -236,6 +236,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 urls: finalUrls.slice(1),
                 windowType: 'current'
             }, () => {
+                // Silence the unchecked runtime.lastError warning (background script doesn't send response)
+                if (chrome.runtime.lastError) {
+                    /* ignore */
+                }
                 // Once message is safely sent, open the first chunk actively (this closes the popup)
                 chrome.tabs.create({ url: finalUrls[0], active: true });
             });
