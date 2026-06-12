@@ -56,8 +56,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 const itemEl = document.createElement('div');
                 itemEl.className = 'url-item';
 
-                // Get Favicon using Google S2 service
-                const faviconUrl = `https://www.google.com/s2/favicons?domain=${new URL(item.url).hostname}&sz=32`;
+                // Get Favicon using Chrome's local API (Manifest V3)
+                const _url = new URL(chrome.runtime.getURL("/_favicon/"));
+                _url.searchParams.set("pageUrl", item.url);
+                _url.searchParams.set("size", "32");
+                const faviconUrl = _url.toString();
 
                 itemEl.innerHTML = `
                     <input type="checkbox" class="url-check" data-id="${item.id}" ${item.selected ? 'checked' : ''}>
