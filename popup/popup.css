@@ -15,8 +15,8 @@
 }
 
 body {
-    width: 450px;
-    height: 600px;
+    width: 480px;
+    height: 660px;
     margin: 0;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     color: var(--text);
@@ -477,4 +477,55 @@ footer {
 .tooltip-container:hover .tooltip-text {
     visibility: visible;
     opacity: 1;
+}
+
+/* Creator Footer */
+.creator-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 20px;
+    background: var(--bg-secondary);
+    border-top: 1px solid var(--border);
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+}
+
+.creator-words {
+    flex: 1;
+    font-size: 11px;
+    color: #cbd5e1; /* Very subtle text so it's not distracting */
+    line-height: 1.4;
+    transition: color 0.3s ease;
+    cursor: default;
+}
+
+.creator-words:hover {
+    color: var(--text-secondary); /* Reveals slightly on hover */
+}
+
+.creator-words .whisper {
+    font-style: italic;
+    opacity: 0.8;
+}
+
+.creator-support {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.kofi-btn {
+    display: inline-block;
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), filter 0.2s;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.05));
+}
+
+.kofi-btn:hover {
+    transform: scale(1.05) translateY(-1px);
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
+}
+
+.kofi-btn:active {
+    transform: scale(0.98);
 }
