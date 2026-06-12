@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "URL Collector and sharer",
-  "version": "1.7.0",
+  "version": "1.7.1",
   "description": "Collect & share links instantly. Auto-capture URLs, export to JSON/CSV/TXT, bulk open tabs. For research & productivity.",
   "permissions": [
     "storage",
