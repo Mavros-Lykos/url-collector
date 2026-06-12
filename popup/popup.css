@@ -15,8 +15,8 @@
 }
 
 body {
-    width: 480px;
-    height: 660px;
+    width: 460px;
+    height: 600px;
     margin: 0;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     color: var(--text);
@@ -246,7 +246,7 @@ input:checked+.slider:before {
 }
 
 .share-section {
-    padding: 18px 20px 12px 20px;
+    padding: 10px 5px 10px 20px;
     display: flex;
     align-items: center;
     gap: 16px;
@@ -306,7 +306,7 @@ input:checked+.slider:before {
 
 /* Footer */
 footer {
-    padding: 16px 20px 20px 20px;
+    padding: 5px 5px 10px 20px;
     background: rgba(255, 255, 255, 0.9);
     backdrop-filter: blur(8px);
     display: flex;
